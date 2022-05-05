@@ -13,13 +13,15 @@ serial = i2c(port=1, address=0x3C)
 device = sh1106(serial)
 oled_font = ImageFont.truetype('FreeSans.ttf', 14)
 
+con0 = sql_con.load_config("logger.conf")
+
 try:
     conn = mariadb.connect(
-        user=conf[2].strip(),
-        password=conf[3].strip(),
-        host=conf[0].strip(),
-        port=int(conf[1].replace("\n","")),
-        database=conf[4].strip()
+        user=con0.user,
+        password=con0.passwd,
+        host=con0.host,
+        port=int(con0.port),
+        database=con0.db
     )
 except mariadb.Error as e:
     with canvas(device) as draw:
@@ -34,7 +36,7 @@ except mariadb.Error as e:
 with canvas(device) as draw:
     draw.text((10, 10), "SQL connection ", font = oled_font, fill = "white")
     draw.text((10, 25), "  is successful", font = oled_font, fill = "white")
-    print ("SQL connection successful")
+    print ("SQL connection successful to "+con0.host)
     
 time.sleep(5)
 exit()
